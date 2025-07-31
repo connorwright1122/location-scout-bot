@@ -125,8 +125,8 @@ async def search_location(message, content):
         # check embedding text
         if (len(msg.embeds) > 0):
             for embed in msg.embeds: 
-                print("Embed Title:", embed.title)
-                print("Embed Description:", embed.description)
+                #print("Embed Title:", embed.title)
+                #print("Embed Description:", embed.description)
 
                 if search_term.lower() in embed.title.lower():
                     found_messages.append({"location": embed.title, "url": msg.jump_url})
@@ -134,7 +134,7 @@ async def search_location(message, content):
 
                 elif (embed.fields):
                     for field in embed.fields:
-                        print(f"Field Name: {field.name}, Field Value: {field.value}")
+                        #print(f"Field Name: {field.name}, Field Value: {field.value}")
                         if search_term.lower() in field.value.lower():
                             found_messages.append({"location": embed.title, "url": msg.jump_url})
                             continue

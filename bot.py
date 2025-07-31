@@ -7,7 +7,11 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 LOCATION_SCOUT_CHANNEL_ID = int(os.getenv('LOCATION_SCOUT_CHANNEL_ID'))
-print(LOCATION_SCOUT_CHANNEL_ID)
+#print(LOCATION_SCOUT_CHANNEL_ID)
+
+prefix_search = "!search"
+prefix_submit = "!submit"
+prefix_help = "!help"
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -31,6 +35,16 @@ async def on_message(message):
     
     content = message.content.strip()
 
+    if content.startswith(prefix_submit):
+        await submit_location(message=message, content=content)
+    
+    elif content.startswith(prefix_search):
+        await search_location(message=message, content=content)
+
+    else:
+        await help(message=message)
+
+async def submit_location(message, content):
     # Extract info 
     name_match = re.search(r"Location Name:\s*(.+)", content, re.IGNORECASE)
     address_match = re.search(r"Address:\s*(.+)", content, re.IGNORECASE)
@@ -92,5 +106,64 @@ async def on_message(message):
     else:
         await message.channel.send("⚠️ Error: Could not find the #location-scout channel.")
 
+async def search_location(message, content):
+    search_term = content.split(prefix_search, 1)[1].strip()
+    found_messages = []
+    location_channel = client.get_channel(LOCATION_SCOUT_CHANNEL_ID)
+
+    if not location_channel:
+        await message.channel.send("⚠️ Could not access the location channel.")
+        return
+
+    messages = [msg async for msg in location_channel.history(limit=1000)]
+
+    for msg in messages:
+        # check raw text
+        #if search_term.lower() in msg.content.lower():
+            #found_messages.append(msg)
+        
+        # check embedding text
+        if (len(msg.embeds) > 0):
+            for embed in msg.embeds: 
+                print("Embed Title:", embed.title)
+                print("Embed Description:", embed.description)
+
+                if search_term.lower() in embed.title.lower():
+                    found_messages.append({"location": embed.title, "url": msg.jump_url})
+                    continue
+
+                elif (embed.fields):
+                    for field in embed.fields:
+                        print(f"Field Name: {field.name}, Field Value: {field.value}")
+                        if search_term.lower() in field.value.lower():
+                            found_messages.append({"location": embed.title, "url": msg.jump_url})
+                            continue
+
+                #elif (embed.footer):
+                    #print("Footer Text:", embed.footer.text)
+    
+    if found_messages:
+        response = f"Found {len(found_messages)} locations containing '{search_term}':\n"
+        for msg in found_messages:
+            #response += f"- {msg.author.display_name}: {msg.content} ({msg.jump_url})\n"
+            response += f"{msg["location"]} - ({msg["url"]})\n"
+        await message.channel.send(response)
+    else:
+        await message.channel.send(f"No locations found containing '{search_term}' in this channel.")
+
+async def help(message):
+    response = "Commands: \
+    \n- !help \
+    \n- !search [keyword] \
+    \n- !submit  \
+        \nLocation Name: Skiles Classroom Building, Room 205 \
+        \nAddress: 686 Cherry St NW, Atlanta, GA 30332 \
+        \nGoogle Maps Link: https://maps.app.goo.gl/ujoZeo7qVoQNPYZU6 \
+        \nPast Shoots: Twochyon Deliverance \
+        \nTags: classroom, large, stinky \
+        \nNotes: Loud A/C. \
+        \n\
+    "
+    await message.channel.send(response)
 
 client.run(BOT_TOKEN)

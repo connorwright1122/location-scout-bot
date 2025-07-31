@@ -146,7 +146,7 @@ async def search_location(message, content):
         response = f"Found {len(found_messages)} locations containing '{search_term}':\n"
         for msg in found_messages:
             #response += f"- {msg.author.display_name}: {msg.content} ({msg.jump_url})\n"
-            response += f"{msg["location"]} - ({msg["url"]})\n"
+            response += f"{msg['location']} - ({msg['url']})\n"
         await message.channel.send(response)
     else:
         await message.channel.send(f"No locations found containing '{search_term}' in this channel.")

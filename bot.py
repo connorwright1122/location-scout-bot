@@ -12,6 +12,7 @@ LOCATION_SCOUT_CHANNEL_ID = int(os.getenv('LOCATION_SCOUT_CHANNEL_ID'))
 prefix_search = "!search"
 prefix_submit = "!submit"
 prefix_help = "!help"
+prefix_adminmsg = "!adminmsg"
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -40,6 +41,9 @@ async def on_message(message):
     
     elif content.startswith(prefix_search):
         await search_location(message=message, content=content)
+    
+    elif content.startswith(prefix_adminmsg):
+        await admin_msg(message=message, content=content)
 
     else:
         await help(message=message)
@@ -150,6 +154,17 @@ async def search_location(message, content):
         await message.channel.send(response)
     else:
         await message.channel.send(f"No locations found containing '{search_term}' in this channel.")
+
+async def admin_msg(message, content):
+    msg = content.split(prefix_adminmsg, 1)[1].strip()
+    found_messages = []
+    location_channel = client.get_channel(LOCATION_SCOUT_CHANNEL_ID)
+
+    if not location_channel:
+        await message.channel.send("⚠️ Could not access the location channel.")
+        return
+    
+    await location_channel.send(msg)
 
 async def help(message):
     response = "Commands: \

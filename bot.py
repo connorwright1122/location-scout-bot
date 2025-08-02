@@ -182,10 +182,6 @@ async def get_stats(message, content):
     messages = [msg async for msg in location_channel.history(limit=1000)]
 
     for msg in messages:
-        # check raw text
-        #if search_term.lower() in msg.content.lower():
-            #found_messages.append(msg)
-        
         # check embedding text
         if (len(msg.embeds) > 0):
             for embed in msg.embeds: 

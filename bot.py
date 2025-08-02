@@ -202,14 +202,14 @@ async def get_stats(message, content):
         response = f"You have submitted {your_val} locations.\nStats:\n"
         for key, value in leaderboard.items():
             response += f"{key} - {value}\n"
-        await message.channel.send(response)
+        await message.channel.send(f"```{response}```")
     else:
         await message.channel.send(f"Error fetching stats.")
 
 
 async def help(message):
     response = "Commands: \
-    \n- !help \
+    \n```- !help \
     \n- !stats \
     \n- !search [keyword] \
     \n- !submit  \
@@ -219,7 +219,7 @@ async def help(message):
         \nPast Shoots: Twochyon Deliverance \
         \nTags: classroom, large, stinky \
         \nNotes: Loud A/C. \
-        \n\
+        ```\n\
     "
     await message.channel.send(response)
 

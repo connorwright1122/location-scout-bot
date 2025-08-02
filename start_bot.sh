@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #sleep 30
+## make sure that the bot has access to write to bot.log with sudo chmod 666 /home/connorwright/Downloads/location-scout-bot/bot.log
 
 echo "===== Starting bot at $(date) =====" >> /home/connorwright/Downloads/location-scout-bot/bot.log
 

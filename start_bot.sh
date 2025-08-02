@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "===== Starting bot at $(date) =====" >> /home/connorwright/Downloads/location-scout-bot/bot.log
-
 sleep 30
+
+echo "===== Starting bot at $(date) =====" >> /home/connorwright/Downloads/location-scout-bot/bot.log
 
 cd /home/connorwright/Downloads/location-scout-bot || exit
 

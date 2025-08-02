@@ -1,13 +1,17 @@
 #!/bin/bash
 
-# Wait for internet and user services to be ready
+echo "===== Starting bot at $(date) =====" >> /home/connorwright/Downloads/location-scout-bot/bot.log
+
 sleep 30
 
-# Move to project directory
 cd /home/connorwright/Downloads/location-scout-bot || exit
 
-# Pull latest changes
-/usr/bin/git pull
+# Pull updates and log result
+echo "Running git pull..." >> bot.log
+/usr/bin/git pull >> bot.log 2>&1
 
-# Load environment and run bot
-/home/connorwright/Downloads/location-scout-bot/venv/bin/python bot.py >> /home/connorwright/Downloads/location-scout-bot/bot.log 2>&1
+# Activate venv and start bot
+echo "Launching bot.py..." >> bot.log
+/home/connorwright/Downloads/location-scout-bot/venv/bin/python bot.py >> bot.log 2>&1
+
+echo "===== Bot stopped at $(date) =====" >> bot.log

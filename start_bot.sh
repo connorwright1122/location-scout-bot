@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 30
+#sleep 30
 
 echo "===== Starting bot at $(date) =====" >> /home/connorwright/Downloads/location-scout-bot/bot.log
 
@@ -12,6 +12,6 @@ echo "Running git pull..." >> bot.log
 
 # Activate venv and start bot
 echo "Launching bot.py..." >> bot.log
-/home/connorwright/Downloads/location-scout-bot/venv/bin/python bot.py >> bot.log 2>&1
+/home/connorwright/Downloads/location-scout-bot/venv/bin/python bot.py >> /home/connorwright/Downloads/location-scout-bot/bot.log 2>&1
 
 echo "===== Bot stopped at $(date) =====" >> bot.log

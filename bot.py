@@ -13,6 +13,7 @@ prefix_search = "!search"
 prefix_submit = "!submit"
 prefix_help = "!help"
 prefix_adminmsg = "!adminmsg"
+prefix_stats = "!stats"
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -44,6 +45,9 @@ async def on_message(message):
     
     elif content.startswith(prefix_adminmsg):
         await admin_msg(message=message, content=content)
+    
+    elif content.startswith(prefix_stats):
+        await get_stats(message=message, content=content)
 
     else:
         await help(message=message)
@@ -166,9 +170,51 @@ async def admin_msg(message, content):
     
     await location_channel.send(msg)
 
+async def get_stats(message, content):
+    leaderboard = {}
+    author = message.author.display_name
+    location_channel = client.get_channel(LOCATION_SCOUT_CHANNEL_ID)
+
+    if not location_channel:
+        await message.channel.send("⚠️ Could not access the location channel.")
+        return
+
+    messages = [msg async for msg in location_channel.history(limit=1000)]
+
+    for msg in messages:
+        # check raw text
+        #if search_term.lower() in msg.content.lower():
+            #found_messages.append(msg)
+        
+        # check embedding text
+        if (len(msg.embeds) > 0):
+            for embed in msg.embeds: 
+                #extracted_author = # from embed.description which is f"**Submitted by:** {message.author.display_name}",
+                match = re.search(r"\*\*Submitted by:\*\*\s*(.+)", embed.description)
+                extracted_author = match.group(1) if match else "Unknown"
+
+                if extracted_author not in leaderboard:
+                    leaderboard[extracted_author] = 0
+
+                #if extracted_author in leaderboard:
+                leaderboard[extracted_author] += 1
+
+                continue
+    
+    if leaderboard:
+        your_val = leaderboard[author] if leaderboard[author] else 0
+        response = f"You have submitted {your_val} locations.\nStats:\n"
+        for key, value in leaderboard.items():
+            response += f"{key} - {value}\n"
+        await message.channel.send(response)
+    else:
+        await message.channel.send(f"Error fetching stats.")
+
+
 async def help(message):
     response = "Commands: \
     \n- !help \
+    \n- !stats \
     \n- !search [keyword] \
     \n- !submit  \
         \nLocation Name: Skiles Classroom Building, Room 205 \

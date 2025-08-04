@@ -1,23 +1,28 @@
 #!/bin/bash
 
-## make sure that the bot has access to write to bot.log with sudo chmod 666 /home/connorwright/Downloads/location-scout-bot/bot.log
+LOGFILE="/home/connorwright/Downloads/location-scout-bot/bot.log"
+REPO_DIR="/home/connorwright/Downloads/location-scout-bot"
 
-echo "===== Starting bot at $(date) =====" >> /home/connorwright/Downloads/location-scout-bot/bot.log
+# Make sure log file is writable
+sudo chmod 666 "$LOGFILE"
 
-cd /home/connorwright/Downloads/location-scout-bot || exit
+echo "===== Starting bot at $(date) =====" >> "$LOGFILE"
 
-# Stash local changes before pulling
-echo "Stashing local changes..." >> "$LOGFILE"
-/usr/bin/git stash --include-untracked >> "$LOGFILE" 2>&1
+cd "$REPO_DIR" || exit
+
+# Stash only tracked changes (keep untracked files like venv/ and bot.log)
+echo "Stashing tracked changes (keeping untracked files)..." >> "$LOGFILE"
+/usr/bin/git stash push --keep-index >> "$LOGFILE" 2>&1
 
 # Pull updates and log result
-echo "Running git pull..." >> bot.log
-/usr/bin/git pull >> bot.log 2>&1
+echo "Running git pull..." >> "$LOGFILE"
+/usr/bin/git pull >> "$LOGFILE" 2>&1
 
-sleep 10
+# Optional: small delay to ensure environment settles
+sleep 5
 
-# Activate venv and start bot
-echo "Launching bot.py..." >> bot.log
-/home/connorwright/Downloads/location-scout-bot/venv/bin/python bot.py >> /home/connorwright/Downloads/location-scout-bot/bot.log 2>&1
+# Launch the bot
+echo "Launching bot.py..." >> "$LOGFILE"
+"$REPO_DIR/venv/bin/python" "$REPO_DIR/bot.py" >> "$LOGFILE" 2>&1
 
-echo "===== Bot stopped at $(date) =====" >> bot.log
+echo "===== Bot stopped at $(date) =====" >> "$LOGFILE"
